@@ -19,9 +19,9 @@ void test(void)
     assert(str2board(&b, "a b |c*d "));
     assert(count_unknowns(b) == 3);
 
-    assert(str2board(&b, "a aX|aXb "));
+    assert(str2board(&b, "aXbX|cXdX"));
     assert(board2str(str, &b));
-    assert(strcmp(str, "a aX|aXb "));
+    assert(strcmp(str, "aXbX|cXdX") == 0);
 
     assert(str2board(&b, "a b |a b "));
     assert(rule1(&b) == false);
@@ -143,7 +143,7 @@ bool rule1(board* b)
                 }
 
                 //same region
-                char reg = b->cs[i][j].mark;
+                char reg = b->cs[i][j].region;
                 for (int r = 0; r < b->sze; r++)
                 {
                     for (int c = 0; c < b->sze; c++)
@@ -163,15 +163,12 @@ bool rule1(board* b)
                     {
                         int nr = i + r;
                         int nc = j + c;
-                        if (nr != i && nc != j)
+                        if (nr >= 0 && nr < b->sze && nc >= 0 && nc < b->sze)
                         {
-                            if (nr >= 0 && nr < b->sze && nc >= 0 && nc < b->sze)
+                            if (b->cs[nr][nc].mark == ' ')
                             {
-                                if (b->cs[nr][nc].mark == ' ')
-                                {
-                                    b->cs[nr][nc].mark = 'X';
-                                    change1 = true;
-                                }
+                                b->cs[nr][nc].mark = 'X';
+                                change1 = true;
                             }
                         }
                     }
@@ -194,6 +191,7 @@ bool rule2(board* b)
     while (again)
     {
         again = false;
+        bool newcrown[MXBSIZE][MXBSIZE] = false;
         //row
         for (int i = 0; i < b->sze; i++)
         {
@@ -209,8 +207,7 @@ bool rule2(board* b)
             }
             if (unk_cnt == 1)
             {
-                b->cs[i][unk_j].mark = '*';
-                again = true;
+                newcrown[i][unk_j] = true;
             }
         }
 
@@ -229,8 +226,7 @@ bool rule2(board* b)
             }
             if (unk_cnt == 1)
             {
-                b->cs[unk_i][j].mark = '*';
-                again = true;
+                newcrown[unk_i][j] = true;
             }
         }
 
@@ -257,14 +253,23 @@ bool rule2(board* b)
                         }
                         if (unk_cnt == 1)
                         {
-                            b->cs[unk_i][unk_j].mark = '*';
-                            again = true;
+                            newcrown[unk_i][unk_j] = true;
                         }
                     }
                 }
             }
         }
-        
+        for (int i = 0; i < b->sze; i++)
+        {
+            for (int j = 0; j < b->sze; j++)
+            {
+                if (newcrown[i][j])
+                {
+                    b->cs[i][j].mark = '*';
+                    again = true;
+                }
+            }
+        }
         if(rule1(b))
         {
             again = true;
