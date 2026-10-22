@@ -37,15 +37,6 @@ bool str2board(board* b, char* str)
     }
     while (*str != '\0')
     {
-        char reg = *str++;
-        char mar = *str++;
-        if (!is_valid_mark(mar))
-        {
-            return false;
-        }
-        b->cs[i][j].region = reg;
-        b->cs[i][j].mark = mar;
-        j++;
         if (*str == '|')
         {
             if (size == 0)
@@ -58,12 +49,24 @@ bool str2board(board* b, char* str)
             }
             j = 0;
             i++;
+            str++;
+            continue;
         }
         if (i >= MXBSIZE||j >= MXBSIZE)
         {
             return false;
         }
+        char reg = *str++;
+        char mar = *str++;
+        if (!is_valid_mark(mar))
+        {
+            return false;
+        }
+        b->cs[i][j].region = reg;
+        b->cs[i][j].mark = mar;
+        j++;
     }
+    i++;
     if(i != size||j != size)
     {
         return false;
