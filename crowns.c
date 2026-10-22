@@ -191,7 +191,7 @@ bool rule2(board* b)
     while (again)
     {
         again = false;
-        bool newcrown[MXBSIZE][MXBSIZE] = false;
+        bool newcrown[MXBSIZE][MXBSIZE] = {false};
         //row
         for (int i = 0; i < b->sze; i++)
         {
@@ -251,10 +251,10 @@ bool rule2(board* b)
                                 unk_j = c;
                             }
                         }
-                        if (unk_cnt == 1)
-                        {
-                            newcrown[unk_i][unk_j] = true;
-                        }
+                    }
+                    if (unk_cnt == 1)
+                    {
+                        newcrown[unk_i][unk_j] = true;
                     }
                 }
             }
